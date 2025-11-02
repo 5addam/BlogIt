@@ -1,0 +1,167 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A modern Django blog application for sharing ideas and stories.">
+    <title>{% if title %}BlogIt - {{ title }}{% else %}BlogIt{% endif %}</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'blog/main.css' %}">
+    <style>
+        /* --- General Layout Improvements --- */
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            background-color: #f8f9fb;
+            padding-top: 70px;
+            font-family: "Inter", system-ui, sans-serif;
+        }
+
+        .page-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        main.container {
+            flex: 1;
+            margin-top: 2rem;
+        }
+
+        /* --- Navbar --- */
+        .navbar {
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .navbar-nav .nav-link {
+            transition: color 0.3s ease;
+        }
+        .navbar-nav .nav-link:hover {
+            color: #cfd8ff;
+        }
+
+        /* --- Sidebar --- */
+        .content-section {
+            background: #fff;
+            border: none;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+        }
+        .content-section h3 {
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            color: #2a5298;
+        }
+
+        /* --- Alerts --- */
+        .alert {
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        /* --- Footer --- */
+        footer {
+            background: #fff;
+            border-top: 1px solid #e9ecef;
+            padding: 1rem 0;
+            text-align: center;
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-top: auto;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.03);
+        }
+
+        /* --- Buttons --- */
+        .btn-outline-light {
+            border-color: #cfd8ff;
+        }
+        .btn-outline-light:hover {
+            background-color: #cfd8ff;
+            color: #1e3c72;
+        }
+    </style>
+</head>
+<body>
+<div class="page-container">
+    <!-- Navbar -->
+    <header class="site-header">
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top">
+          <div class="container">
+            <a class="navbar-brand" href="{% url 'blog-home' %}">BlogIt</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarToggle">
+              <div class="navbar-nav me-auto">
+                <a class="nav-item nav-link" href="{% url 'blog-home' %}">Home</a>
+                <a class="nav-item nav-link" href="{% url 'blog-about' %}">About</a>
+              </div>
+
+              <div class="navbar-nav ms-auto align-items-center">
+                {% if user.is_authenticated %}
+                  <a class="nav-item nav-link" href="{% url 'post-create' %}">New Post</a>
+                  <a class="nav-item nav-link" href="{% url 'profile' %}">Profile</a>
+                  <form action="{% url 'logout' %}" method="post" class="d-inline ms-2">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
+                  </form>
+                {% else %}
+                  <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
+                  <a class="nav-item nav-link" href="{% url 'register' %}">Register</a>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main role="main" class="container">
+      <div class="row">
+        <div class="col-md-8 mb-4">
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+          {% block content %}{% endblock %}
+        </div>
+
+        <div class="col-md-4">
+          <div class="content-section">
+            <h3>Quick Links</h3>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item"><a href="#" class="text-decoration-none text-primary">Latest Posts</a></li>
+              <li class="list-group-item"><a href="#" class="text-decoration-none text-primary">Announcements</a></li>
+              <li class="list-group-item"><a href="#" class="text-decoration-none text-primary">Calendar</a></li>
+              <li class="list-group-item"><a href="#" class="text-decoration-none text-primary">Community</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      &copy; {{ now|date:"Y" }} BlogIt - A Simple Blogging Site.
+    </footer>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>
