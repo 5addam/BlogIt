@@ -34,7 +34,7 @@ def profile(request, username=None):
             )
             if not created:
                 relation.delete()
-            return redirect('profile', username=profile_user.username)
+            return redirect('user-profile', username=profile_user.username)
 
     # Handle profile update if current user is editing their own profile
     if profile_user == request.user and request.method == 'POST' and 'update_profile' in request.POST:

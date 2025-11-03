@@ -40,6 +40,23 @@ class UserPostListView(ListView):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         return Post.objects.filter(author=user).order_by('-date_posted')
 
+
+class FollowingFeedView(LoginRequiredMixin, ListView):
+    model = Post
+    template_name = 'blog/home.html'
+    context_object_name = 'posts'
+    ordering = ['-date_posted']
+    paginate_by = 5
+    
+    def get_queryset(self):
+        following_users = self.request.user.following_rel.values_list('following', flat=True)
+        return Post.objects.filter(author__in=following_users).order_by('-date_posted')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['following_feed'] = True
+        return context
+    
 class PostDetailView(DetailView):
     model = Post
 
@@ -87,8 +104,6 @@ class PostLikeView(LoginRequiredMixin, View):
 
         # Redirect back to previous page or home
         return redirect(request.META.get('HTTP_REFERER', 'home'))
-
-
 
 def about(request):
     return render(request, 'blog/about.html', {'title':'About'})
