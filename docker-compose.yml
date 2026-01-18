@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  dev-web:
+    build: .
+    command: python3 manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/blog_it
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./.env
+    depends_on:
+      - dev-db
+
+
+  dev-db:
+    image: postgres:alpine3.21
+    restart: always
+    env_file:
+      - ./.env
+    volumes:
+      # Persist the database data to a volume
+      - dev-db-data:/var/lib/postgresql/data
+    ports:
+      # Expose the database port (optional, useful for external tools)
+      - "5432:5432"
+
+volumes:
+  dev-db-data:

@@ -1,0 +1,21 @@
+{
+  "name": "Django Dev Container",
+  "dockerComposeFile": [
+    "../docker-compose.yml"
+  ],
+  "service": "dev-web",
+  "workspaceFolder": "/blog_it",
+  "shutdownAction": "stopCompose",
+  "extensions": [
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "batisteo.vscode-django"
+  ],
+  // Forwarding local SSH Key to the dev container
+  "runArgs": [
+    "--env", "SSH_AUTH_SOCK=/ssh-agent"
+  ],
+  "forwardPorts": [
+    22
+  ],
+}
